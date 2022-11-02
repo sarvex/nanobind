@@ -1127,15 +1127,6 @@ void nb_inst_move(PyObject *dst, const PyObject *src) noexcept {
     nbi->ready = nbi->destruct = true;
 }
 
-#if defined(Py_LIMITED_API)
-static size_t type_basicsize = 0;
-type_data *nb_type_data_static(PyTypeObject *o) noexcept {
-    if (type_basicsize == 0)
-        type_basicsize = cast<size_t>(handle(&PyType_Type).attr("__basicsize__"));
-    return (type_data *) (((char *) o) + type_basicsize);
-}
-#endif
-
 /// Fetch the name of an instance as 'char *' (must be deallocated using 'free'!)
 PyObject *nb_type_name(PyTypeObject *tp) noexcept {
     PyObject *name = PyObject_GetAttrString((PyObject *) tp, "__name__");

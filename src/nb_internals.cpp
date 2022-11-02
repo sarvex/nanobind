@@ -211,7 +211,6 @@ static PyType_Spec nb_enum_spec = {
     .slots = nb_enum_slots
 };
 
-
 #if PY_VERSION_HEX >= 0x030C0000
 static PyMemberDef nb_static_property_members[] = {
     { "__doc__", T_OBJECT, 0, 0, nullptr },
@@ -401,15 +400,11 @@ static void internals_make() {
 
     // Metaclass #1 (nb_type)
 #if defined(Py_LIMITED_API)
-    int tp_itemsize = cast<int>(handle(&PyType_Type).attr("__itemsize__"));
-    int tp_basicsize = cast<int>(handle(&PyType_Type).attr("__basicsize__"));
+    nb_type_spec.basicsize = nb_enum_spec.basicsize = - (int) sizeof(type_data);
 #else
-    int tp_itemsize = (int) PyType_Type.tp_itemsize;
-    int tp_basicsize = (int) PyType_Type.tp_basicsize;
+    nb_type_spec.basicsize = nb_enum_spec.basicsize = (int) PyType_Type.tp_basicsize + (int) sizeof(type_data);
+    nb_type_spec.itemsize = nb_enum_spec.itemsize = (int) PyType_Type.tp_itemsize;
 #endif
-    nb_type_spec.basicsize = nb_enum_spec.basicsize = tp_basicsize
-        + (int) sizeof(type_data);
-    nb_type_spec.itemsize = nb_enum_spec.itemsize = tp_itemsize;
     nb_type_slots[0].pfunc = &PyType_Type;
     internals_p->nb_type = (PyTypeObject *) PyType_FromSpec(&nb_type_spec);
 
@@ -418,25 +413,24 @@ static void internals_make() {
     internals_p->nb_enum = (PyTypeObject *) PyType_FromSpec(&nb_enum_spec);
 
     /// Static properties
- #if defined(Py_LIMITED_API)
-    tp_basicsize = cast<int>(handle(&PyProperty_Type).attr("__basicsize__"));
-    tp_itemsize = cast<int>(handle(&PyProperty_Type).attr("__itemsize__"));
- #else
-    tp_basicsize = (int) PyProperty_Type.tp_basicsize;
-    tp_itemsize = (int) PyProperty_Type.tp_itemsize;
- #endif
-
-    // See https://github.com/python/cpython/issues/98963
 #if PY_VERSION_HEX >= 0x030C0000
-    nb_static_property_members[0].offset = tp_basicsize;
+    // Special case for Python 3.12 (https://github.com/python/cpython/issues/98963)
+    #if defined(Py_LIMITED_API)
+        nb_static_property_spec.basicsize = - (int) sizeof(PyObject *);
+        nb_static_property_spec.itemsize = 0;
+        nb_static_property_members[0].flags = PY_RELATIVE_OFFSET;
+    #else
+        nb_static_property_spec.basicsize = (int) PyProperty_Type.tp_basicsize + (int) sizeof(PyObject *);
+        nb_static_property_spec.itemsize = (int) PyProperty_Type.tp_itemsize;
+        nb_static_property_members[0].offset = (int) PyProperty_Type.tp_basicsize;
+    #endif
     nb_static_property_slots[1].pfunc = nb_static_property_members;
-    tp_basicsize += sizeof(PyObject *);
 #else
+    nb_static_property_spec.itemsize = (int) PyProperty_Type.tp_itemsize;
+    nb_static_property_spec.basicsize = (int) PyProperty_Type.tp_basicsize;
     nb_static_property_slots[1].pfunc = PyProperty_Type.tp_members;
 #endif
     nb_static_property_slots[0].pfunc = &PyProperty_Type;
-    nb_static_property_spec.basicsize = tp_basicsize;
-    nb_static_property_spec.itemsize = tp_itemsize;
 
     internals_p->nb_static_property =
         (PyTypeObject *) PyType_FromSpec(&nb_static_property_spec);

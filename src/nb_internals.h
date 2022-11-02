@@ -225,17 +225,13 @@ NB_INLINE func_data *nb_func_data(void *o) {
     return (func_data *) (((char *) o) + sizeof(nb_func));
 }
 
-#if defined(Py_LIMITED_API)
-extern type_data *nb_type_data_static(PyTypeObject *o) noexcept;
-#endif
-
 /// Fetch the nanobind type record from a 'nb_type' instance
 NB_INLINE type_data *nb_type_data(PyTypeObject *o) noexcept{
-    #if !defined(Py_LIMITED_API)
-        return (type_data *) (((char *) o) + sizeof(PyHeapTypeObject));
-    #else
-        return nb_type_data_static(o);
-    #endif
+#if defined(Py_LIMITED_API)
+    return (type_data *) PyObject_GetTypeData((PyObject *) o, Py_TYPE((PyObject *) o));
+#else
+    return (type_data *) (((char *) o) + sizeof(PyHeapTypeObject));
+#endif
 }
 
 extern PyObject *nb_type_name(PyTypeObject *o) noexcept;
