@@ -7,6 +7,10 @@
 [![](https://img.shields.io/badge/Example-Link-brightgreen)](https://github.com/wjakob/nanobind_example)
 [![](https://img.shields.io/badge/Changelog-Link-brightgreen)](https://nanobind.readthedocs.io/en/latest/changelog.html)
 
+<p align="center">
+    <img src="https://github.com/wjakob/nanobind/raw/docs/docs/images/logo.jpg" alt="nanobind logo" width="800" style="max-height: 555px">
+</p>
+
 _nanobind_ is a small binding library that exposes C++ types in Python and vice
 versa. It is reminiscent of
 [Boost.Python](https://www.boost.org/doc/libs/1_64_0/libs/python/doc/html) and
@@ -25,3 +29,7 @@ lower** runtime overheads compared to pybind11.
 Please see the following links for tutorial and reference documentation in
 [HTML](https://nanobind.readthedocs.io/en/latest/) and
 [PDF](https://nanobind.readthedocs.io/_/downloads/en/latest/pdf/) formats.
+
+The nanobind logo was designed by [AndoTwin
+Studio](https://andotwinstudio.com). A high-resolution version is available
+[here](https://rgl.s3.eu-central-1.amazonaws.com/media/uploads/wjakob/2023/03/27/nanobind_logo.jpg).
