@@ -14,10 +14,7 @@ def assert_stats(**kwargs):
     collect()
     for k, v in t.stats().items():
         fail = False
-        if k in kwargs:
-            if v != kwargs[k]:
-                fail = True
-        elif v != 0:
+        if k in kwargs and v != kwargs[k] or k not in kwargs and v != 0:
             fail = True
         if fail:
             raise Exception(f'Mismatch for key {k}: {t.stats()}')
@@ -652,8 +649,8 @@ def test60_set_return_value():
             "unordered_set_return_value() -> set[str]")
 
 def test61_set_in_value():
-    t.set_in_value(set([chr(ord("a") + i) for i in range(10)]))
-    t.unordered_set_in_value(set([chr(ord("a") + i) for i in range(10)]))
+    t.set_in_value({chr(ord("a") + i) for i in range(10)})
+    t.unordered_set_in_value({chr(ord("a") + i) for i in range(10)})
     if sys.version_info < (3, 9):
         assert t.set_in_value.__doc__ == (
             "set_in_value(x: Set[str]) -> None")
@@ -667,7 +664,7 @@ def test61_set_in_value():
 
 
 def test62_set_in_lvalue_ref():
-    t.set_in_lvalue_ref(set([chr(ord("a") + i) for i in range(10)]))
+    t.set_in_lvalue_ref({chr(ord("a") + i) for i in range(10)})
     if sys.version_info < (3, 9):
         assert t.set_in_lvalue_ref.__doc__ == (
             "set_in_lvalue_ref(x: Set[str]) -> None"
@@ -678,7 +675,7 @@ def test62_set_in_lvalue_ref():
         )
 
 def test63_set_in_rvalue_ref():
-    t.set_in_rvalue_ref(set([chr(ord("a") + i) for i in range(10)]))
+    t.set_in_rvalue_ref({chr(ord("a") + i) for i in range(10)})
     if sys.version_info < (3, 9):
         assert t.set_in_rvalue_ref.__doc__ == (
             "set_in_rvalue_ref(x: Set[str]) -> None"
@@ -691,7 +688,7 @@ def test63_set_in_rvalue_ref():
 
 def test64_set_in_failure():
     with pytest.raises(TypeError) as excinfo:
-        t.set_in_value(set([i for i in range(10)]))
+        t.set_in_value(set(list(range(10))))
     assert 'incompatible function arguments' in str(excinfo.value)
 
 

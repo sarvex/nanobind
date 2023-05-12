@@ -5,10 +5,10 @@ import test_bind_vector_ext as t
 def test01_vector_int(capfd):
     v_int = t.VectorInt([0, 0])
     assert len(v_int) == 2
-    assert bool(v_int) is True
+    assert bool(v_int)
 
     # test construction from a generator
-    v_int1 = t.VectorInt(x for x in range(5))
+    v_int1 = t.VectorInt(iter(range(5)))
     assert t.VectorInt(v_int1) == t.VectorInt([0, 1, 2, 3, 4])
     assert repr(v_int1) == "test_bind_vector_ext.VectorInt([0, 1, 2, 3, 4])"
 
@@ -49,7 +49,7 @@ def test01_vector_int(capfd):
     assert v_int2 == t.VectorInt([0, 99, 2, 3, 4, 5, 6, 7])
 
     # test extending from a generator
-    v_int2.extend(x for x in range(5))
+    v_int2.extend(iter(range(5)))
     assert v_int2 == t.VectorInt([0, 99, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4])
 
     # Test count feature

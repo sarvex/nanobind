@@ -18,7 +18,7 @@ for f in files:
             success = True
     assert success
 
-    out = subprocess.check_output(['nm', '-gjU', 'tmp/' + f[1]])
+    out = subprocess.check_output(['nm', '-gjU', f'tmp/{f[1]}'])
     for line in out.decode().split('\n'):
         if line.startswith('_Py') or line.startswith('__Py'):
             funcs.add(line)

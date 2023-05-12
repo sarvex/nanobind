@@ -20,7 +20,7 @@ def test02_value_iterator():
         m = t.StringMap(d)
         types.append(type(m.values()))
         assert sorted(list(m.values())) == sorted(list(d.values()))
-    assert types[0] is types[1] and types[1] is types[2]
+    assert types[0] is types[1] is types[2]
 
 
 def test03_items_iterator():

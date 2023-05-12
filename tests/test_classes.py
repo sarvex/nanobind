@@ -14,10 +14,7 @@ def assert_stats(**kwargs):
     collect()
     for k, v in t.stats().items():
         fail = False
-        if k in kwargs:
-            if v != kwargs[k]:
-                fail = True
-        elif v != 0:
+        if k in kwargs and v != kwargs[k] or k not in kwargs and v != 0:
             fail = True
         if fail:
             raise Exception(f'Mismatch for key {k}: {t.stats()}')
@@ -127,8 +124,8 @@ def test06_reference_internal(clean):
 
 
 def test07_big():
-    x = [t.Big() for i in range(1024)]
-    x2 = [t.BigAligned() for i in range(1024)]
+    x = [t.Big() for _ in range(1024)]
+    x2 = [t.BigAligned() for _ in range(1024)]
 
 
 def test08_inheritance():
@@ -185,6 +182,8 @@ def test10_trampoline(clean):
         assert t.animal_passthrough(d) is d
 
     a = 0
+
+
     class GenericAnimal(t.Animal):
         def what(self):
             return "goo"
@@ -194,7 +193,8 @@ def test10_trampoline(clean):
             a += 1
 
         def name(self):
-            return 'Generic' + super().name()
+            return f'Generic{super().name()}'
+
 
     ga = GenericAnimal()
     assert t.go(ga) == 'GenericAnimal says goo'
